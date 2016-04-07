@@ -52,6 +52,15 @@ post '/event/failed' do
   notify MessageFailed.from_xml(raw); "ok"
 end
 
+post '/event/formpost' do
+  notify case params[:notificationType]
+         when 'MessageReceived' then FormPostMessageDelivered.from_form_data(params)
+         else {type: :other, msg: 'Missing formposts', at: Time.now}
+         end
+         
+  "ok"
+end
+
 post '/event/soap' do
   body = /<soap:Body>(.*?)<\/soap:Body>/.match(raw).captures[0]
     
